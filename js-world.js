@@ -203,9 +203,50 @@ View.prototype.find = function(ch) {
   return randomElement(found);
 };
 
+// Find direction adding a number to clockwise rotation
 function dirPlus(dir, n) {
   var index = directionNames.indexOf(dir);
   return directionNames[(index + n + 8) % 8];
 }
 
+// Critter Obeject that will follow a wall on their lefthand side
+function WallFollower() {
+  this.dir = "s";
+}
 
+// 
+WallFollower.prototype.act = function(view) {
+  var start = this.dir;
+  if (view.look(dirPlus(this.dir, -3)) != " ")
+    start = this.dir = dirPlus(this.dir, -2);
+  while (view.look(this.dir) != " ") {
+    this.dir = dirPlus(this.dir, 1);
+    if (this.dir == start) break;
+  }
+  return {type: "move", direction: this.dir};
+};
+
+// Alternate Life-like World object inherits from World
+function LifelikeWorld(map, legend) {
+  World.call(this, map, legend);
+}
+LifelikeWorld.prototype = Object.create(null);
+
+// Different action types
+var actionTypes = Object.create(null);
+
+// Overriding World letAct function
+// Passes view object to critter object
+// If action is vaild then peform action or of no action possible subtract 0.2 energy
+LifelikeWorld.prototype.letAct = function(critter, vector) {
+  var action = critter.act(new View(this, vector));
+  var handled = action &&
+    action.type in actionTypes &&
+    actionTypes[action.type].call(this, critter, vector, action);
+  
+  if (!handled) {
+    critter.energy -= 0.2;
+    if (critter.energy <= 0)
+      this.grid.set(vector.null);
+  }
+};
