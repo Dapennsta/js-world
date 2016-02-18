@@ -250,3 +250,51 @@ LifelikeWorld.prototype.letAct = function(critter, vector) {
       this.grid.set(vector.null);
   }
 };
+
+// Grow action adding 0.5 energy
+actionTypes.grow = function(critter) {
+  critter.energy += 0.5;
+  return true;
+};
+
+// Move action for critter if enough energy
+// Similar to World letAct function but with energy checks
+actionTypes.move = function(critter, vector, action) {
+  var dest = this.checkDestination(action, vector);
+  if (dest == null ||
+      critter.energy <= 1 ||
+      this.grid.get(dest) != null)
+    return false;
+  critter.energy -= 1;
+  this.grid.set(vector, null);
+  this.grid.set(dest, critter);
+  return true;
+};
+
+// Eat action when encouners are made between critters
+// Transfer energy to critter doing the eating
+// Remove eaten critter from grid
+actionTypes.eat = function(critter, vector, action) {
+  var dest = this.checkDestination(action, vector);
+  var atDest = dest != null && this.grid.get(dest);
+  if (!atDest || atDest.energy == null)
+    return false;
+  critter.energy += atDest.energy;
+  this.grid.set(dest, null);
+  return true;
+};
+
+// Reproduce action requires twice the energy of the baby
+// Similar to move or eat action but places new critter in direction
+actionTypes.reproduce = function(critter, vector, action) {
+  var baby = elementFromChar(this.legend, critter.originChar);
+  var dest = this.checkDestination(action, vector);
+  if (dest == null ||
+      critter.energy <= 2 * baby.energy ||
+      this.grid.get(dest) != null)
+    return false;
+  critter.energy -= 2 * baby.energy;
+  this.grid.set(dest,baby);
+  return true;
+};
+
