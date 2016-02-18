@@ -57,6 +57,7 @@ var directions = {
     "e": new Vector(1,0),
     "se": new Vector(1,1),
     "s": new Vector(0,1),
+    "sw": new Vector(-1.1),
     "w": new Vector(-1,0),
     "nw": new Vector(-1,-1)
 };
@@ -74,6 +75,7 @@ function BouncingCritter() {
     this.direction = randomElement(directionNames);
 }
 
+// Uses a view object to find a space char beside current position
 BouncingCritter.prototype.act = function(view) {
     if (view.look(this.direction) != " ")
       this.direction = view.find(" ") || "s";
@@ -200,3 +202,10 @@ View.prototype.find = function(ch) {
   if (found.length == 0) return null;
   return randomElement(found);
 };
+
+function dirPlus(dir, n) {
+  var index = directionNames.indexOf(dir);
+  return directionNames[(index + n + 8) % 8];
+}
+
+
