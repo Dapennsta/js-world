@@ -149,7 +149,7 @@ World.prototype.turn = function() {
 
 // Passes a View object to the critter
 // Replace critter and dest square
-World.prototype.letAct = function(critter, value) {
+World.prototype.letAct = function(critter, vector) {
     var action = critter.act(new View(this, vector));
     if (action && action.type == "move") {
       var dest = this.checkDestination(action, vector);
@@ -167,4 +167,36 @@ World.prototype.checkDestination = function(action, vector) {
       if (this.grid.isInside(dest))
         return dest;
     }
+};
+
+// View object containing the world and a vector
+function View(world, vector) {
+  this.world = world;
+  this.vector = vector;
+}
+
+// Looks in grid to see char at given direction
+// Returns char if inside grid or '#' otherwise in case of unwalled world
+View.prototype.look = function(dir) {
+  var target = this.vector.plus(directions[dir]);
+  if (this.world.grid.isInside(target))
+    return charFromElement(this.world.grid.get(target));
+  else
+    return "#";
+};
+
+// Finds and returns an array of all char around an grid point
+View.prototype.findAll = function(ch) {
+  var found = [];
+  for (var dir in directions)
+    if (this.look(dir) == ch)
+      found.push(dir);
+    return found;
+};
+
+// Returns a random char from a findAll array
+View.prototype.find = function(ch) {
+  var found = this.findAll(ch);
+  if (found.length == 0) return null;
+  return randomElement(found);
 };
