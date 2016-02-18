@@ -36,6 +36,7 @@ Grid.prototype.get = function(vector) {
 };
 Grid.prototype.set = function(vector, value) {
     this.space[vector.x + this.width * vector.y] = value;
+};
 
 // Called with a function 'f' and a context being the 'this' of World
 // Value variable will be the character in the map
@@ -133,7 +134,9 @@ var world = new World(plan, {"#": Wall, "o": BouncingCritter});
 console.log(world.toString());
 */
 
-// Check each grid element for 
+// Using the Grid's forEach function looking of a .act method
+// calling it with a the variable from the outer Grid function
+// Keeps an array of already acted upon critters
 World.prototype.turn = function() {
     var acted =[];
     this.grid.forEach(function(critter,vector) {
@@ -144,6 +147,8 @@ World.prototype.turn = function() {
     }, this);
 };
 
+// Passes a View object to the critter
+// Replace critter and dest square
 World.prototype.letAct = function(critter, value) {
     var action = critter.act(new View(this, vector));
     if (action && action.type == "move") {
@@ -155,6 +160,7 @@ World.prototype.letAct = function(critter, value) {
     }
 };
 
+// Check vector to make sure it is in the grid
 World.prototype.checkDestination = function(action, vector) {
     if (directions.hasOwnProperty(action.direction)) {
       var dest = vector.plus(directions[action.direction]);
