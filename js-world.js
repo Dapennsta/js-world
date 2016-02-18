@@ -284,7 +284,7 @@ actionTypes.eat = function(critter, vector, action) {
   return true;
 };
 
-// Reproduce action requires twice the energy of the baby
+// Reproduce action requires twice the energy of the new baby
 // Similar to move or eat action but places new critter in direction
 actionTypes.reproduce = function(critter, vector, action) {
   var baby = elementFromChar(this.legend, critter.originChar);
@@ -298,3 +298,38 @@ actionTypes.reproduce = function(critter, vector, action) {
   return true;
 };
 
+// Plant object is constructed with initial energy
+function Plant() {
+  this.energy = 3 + Math.random() * 4;
+}
+
+// Plant act function to reproduce or grow 
+Plant.prototype.act = function(view) {
+  if (this.energy > 15) {
+    var space = view.find(" ");
+    if (space)
+      return {type: "reproduce", direction: space};
+  }
+  if (this.energy < 20)
+    return {type: "grow"};
+};
+
+// Plant Eater object begins with 20 energy
+function PlantEater() {
+  this.energy = 20;
+}
+
+// Plant Eater act method
+// Reproduce if enegery over 60
+// Eat plant if is next to one
+// Move if space
+PlantEater.prototype.act = function(view) {
+  var space = view.find(" ");
+  if (this.energy > 60 && space)
+    return {type: "reproduce", direction: space};
+  var plant = view.find("*");
+  if (plant)
+    return {type: "eat", direction: plant};
+  if (space)
+    return {type: "move", direction: space};
+};
