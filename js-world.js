@@ -353,20 +353,18 @@ function SmartPlantEater() {
 SmartPlantEater.prototype.act = function (view) {
   var mate = view.find("O");
   var space = view.find(" ");
-  this.lastMeal++;
+  //this.lastMeal++;
   
   // control mating by increasing energy needed along with a mate nearby
-  if (this.energy > 80 && mate && space)
+  if (this.energy > 60 && space)
     return {type: "reproduce", direction: space};
   
   // control eating habits
-  if (this.lastMeal > 1) {
-    var plant = view.find("*");
-    if (plant && view.findAll("*").length > 1) {
-      this.lastMeal = 0;
-      this.dir = plant;
-      return {type: "eat", direction: plant};
-    }
+  var plant = view.find("*");
+  if (plant && view.findAll("*").length > 1) {
+    //this.lastMeal = 0;
+    this.dir = plant;
+    return {type: "eat", direction: plant};
   }
   
   // make movement more randomized
@@ -385,3 +383,56 @@ SmartPlantEater.prototype.act = function (view) {
   return {type: "move", direction: this.dir};
   */
 };
+
+// Carinore critter will eat only PlantEater
+function Tiger() {
+  this.energy = 80;
+  this.lastMeal = 0;
+  this.dir = randomElement(directionNames);
+}
+
+Tiger.prototype.act = function(view) {
+  this.lastMeal++;
+  var space = view.find(" ");
+  
+  if (this.energy > 160 && space)
+    return {type: "reproduce", direction: space};
+  
+  if (this.lastMeal > 3) {
+    var prey = view.find("O");
+    this.lastMeal = 0;
+    return {type: "eat", direction: prey};
+  }
+    
+  if (view.look(this.dir) != " ")
+    this.dir = view.find(" ") || "s";
+  return {type: "move", direction: this.dir};
+  
+};
+
+/*
+animateWorld(new LifelikeWorld(
+  ["####################################################",
+   "#                 ####         ****              ###",
+   "#   *  @  ##                 ########       OO    ##",
+   "#   *    ##        O O                 ****       *#",
+   "#       ##*                        ##########     *#",
+   "#      ##***  *         ****                     **#",
+   "#* **  #  *  ***      #########                  **#",
+   "#* **  #      *               #   *              **#",
+   "#     ##              #   O   #  ***          ######",
+   "#*            @       #       #   *        O  #    #",
+   "#*                    #  ######                 ** #",
+   "###          ****          ***                  ** #",
+   "#       O                        @         O       #",
+   "#   *     ##  ##  ##  ##               ###      *  #",
+   "#   **         #              *       #####  O     #",
+   "##  **  O   O  #  #    ***  ***        ###      ** #",
+   "###               #   *****                    ****#",
+   "####################################################"],
+  {"#": Wall,
+   "@": Tiger,
+   "O": SmartPlantEater, // from previous exercise
+   "*": Plant}
+));
+*/
