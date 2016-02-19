@@ -333,3 +333,55 @@ PlantEater.prototype.act = function(view) {
   if (space)
     return {type: "move", direction: space};
 };
+
+/*
+Problem 1: Devise way for herbivores to eat sparinglly
+
+Problem 2: Instead of wandering around aimlessly, herbivores should move toward
+		   plants if hungry
+           
+Problem 3: Control breeding to prevent over population
+		   wiping out the food source
+*/
+
+function SmartPlantEater() {
+  this.energy = 20;
+  this.lastMeal = 0;
+  this.dir = randomElement(directionNames);
+}
+
+SmartPlantEater.prototype.act = function (view) {
+  var mate = view.find("O");
+  var space = view.find(" ");
+  this.lastMeal++;
+  
+  // control mating by increasing energy needed along with a mate nearby
+  if (this.energy > 80 && mate && space)
+    return {type: "reproduce", direction: space};
+  
+  // control eating habits
+  if (this.lastMeal > 1) {
+    var plant = view.find("*");
+    if (plant && view.findAll("*").length > 1) {
+      this.lastMeal = 0;
+      this.dir = plant;
+      return {type: "eat", direction: plant};
+    }
+  }
+  
+  // make movement more randomized
+  if (view.look(this.dir) != " ")
+    this.dir = view.find(" ") || "s";
+  return {type: "move", direction: this.dir};
+  
+  // movement always move counterclockwise by 1 direction
+  // not very effective
+  /*
+  var start = this.dir;
+  while (view.look(this.dir) != " ") {
+    this.dir = dirPlus(this.dir, -1);
+    if (this.dir == start) break;
+  }
+  return {type: "move", direction: this.dir};
+  */
+};
