@@ -1,0 +1,32 @@
+Organize these Objects and functions into Modules
+Put internal functions in parentesis
+
+Module "grid"
+    Vector
+    Grid
+    directions
+    directionNames
+    
+Module "world"
+    (randomElement)
+    (elementFromChar)
+    (charFromElement)
+    directions [reexported]
+    World
+    LifelikeWorld
+    View
+    
+Module "simple_ecosystem
+    (dirPlus)
+    (randomElement) [duplicated]
+    Wall
+    BouncingCritter
+    WallFlower
+    
+Module 'ecosystem'
+    Wall [duplicated]
+    Plant
+    PlantEater
+    SmartPlantEater
+    Tiger
+
